@@ -3,76 +3,94 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Personal Website">
-    <title>Your Name | Personal Website</title>
-    <link rel="stylesheet" href="styles.css">
+    <title>Live Cricket Scores</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .container {
+            text-align: center;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+            width: 80%;
+            max-width: 600px;
+        }
+        h1 {
+            color: #3d3d3d;
+        }
+        #scoreboard {
+            margin-top: 20px;
+            font-size: 18px;
+            color: #333;
+        }
+        .match {
+            margin: 10px 0;
+            padding: 10px;
+            background-color: #e8e8e8;
+            border-radius: 5px;
+        }
+        .match p {
+            margin: 5px 0;
+        }
+        .loading {
+            font-size: 20px;
+            color: #666;
+        }
+    </style>
 </head>
 <body>
-    <header>
-        <nav>
-            <ul>
-                <li><a href="#home">Home</a></li>
-                <li><a href="#about">About</a></li>
-                <li><a href="#portfolio">Portfolio</a></li>
-                <li><a href="#contact">Contact</a></li>
-            </ul>
-        </nav>
-    </header>
-    
-    <section id="home">
-        <div class="container">
-            <h1>Welcome to My Personal Website</h1>
-            <p>Hi, I'm [Your Name], a [Your Profession]. Explore my work and connect with me!</p>
-            <button onclick="scrollToSection('about')">Learn More About Me</button>
+    <div class="container">
+        <h1>Live Cricket Scores</h1>
+        <div id="scoreboard">
+            <div class="loading">Loading live scores...</div>
         </div>
-    </section>
+    </div>
 
-    <section id="about">
-        <div class="container">
-            <h2>About Me</h2>
-            <p>I am a [brief description of your profession, experience, and skills].</p>
-            <p>Feel free to explore my portfolio and get in touch if you'd like to collaborate!</p>
-        </div>
-    </section>
+    <script>
+        // Replace with your own CricAPI key
+        const apiKey = 'bc32eef6-fdf2-481d-a1c2-403512e18aad';
+        const url = `https://cricapi.com/api/matches?apikey=${apiKey}`;
 
-    <section id="portfolio">
-        <div class="container">
-            <h2>My Work</h2>
-            <div class="portfolio-items">
-                <!-- Portfolio items, replace with your own work -->
-                <div class="portfolio-item">
-                    <img src="portfolio1.jpg" alt="Project 1">
-                    <p>Project 1</p>
-                </div>
-                <div class="portfolio-item">
-                    <img src="portfolio2.jpg" alt="Project 2">
-                    <p>Project 2</p>
-                </div>
-            </div>
-        </div>
-    </section>
+        // Function to fetch live match data
+        async function fetchLiveScores() {
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
 
-    <section id="contact">
-        <div class="container">
-            <h2>Contact Me</h2>
-            <form id="contact-form">
-                <input type="text" id="name" name="name" placeholder="Your Name" required>
-                <input type="email" id="email" name="email" placeholder="Your Email" required>
-                <textarea id="message" name="message" placeholder="Your Message" required></textarea>
-                <button type="submit">Send Message</button>
-            </form>
-        </div>
-    </section>
+                // Check if matches are available
+                if (data.matches && data.matches.length > 0) {
+                    const matchData = data.matches.map(match => {
+                        return `
+                            <div class="match">
+                                <p><strong>${match.team1}</strong> vs <strong>${match.team2}</strong></p>
+                                <p>Status: ${match.status}</p>
+                                <p>Score: ${match.score}</p>
+                            </div>
+                        `;
+                    }).join('');
+                    
+                    document.getElementById('scoreboard').innerHTML = matchData;
+                } else {
+                    document.getElementById('scoreboard').innerHTML = '<p>No live matches currently.</p>';
+                }
+            } catch (error) {
+                document.getElementById('scoreboard').innerHTML = '<p>Error fetching live scores. Please try again later.</p>';
+            }
+        }
 
-    <footer>
-        <p>© 2025 [Your Name]. All rights reserved.</p>
-    </footer>
+        // Fetch the live scores when the page loads
+        fetchLiveScores();
 
-    <script src="script.js"></script>
+        // Refresh scores every 30 seconds
+        setInterval(fetchLiveScores, 30000);
+    </script>
 </body>
-</html>
-
-
-</body>
-
 </html>
