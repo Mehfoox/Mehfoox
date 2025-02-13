@@ -147,7 +147,13 @@
     async function fetchMatchData(url, containerId) {
         try {
             const response = await fetch(url);
+            if (!response.ok) {
+                throw new Error(`Failed to fetch data from API. Status: ${response.status}`);
+            }
             const data = await response.json();
+            
+            // Log API response for debugging
+            console.log('API Response:', data);
 
             // Check if matches are available
             if (data.matches && data.matches.length > 0) {
@@ -176,6 +182,7 @@
                 document.getElementById(containerId).innerHTML = '<p class="error-message">No matches found.</p>';
             }
         } catch (error) {
+            console.error('Error fetching match data:', error); // Log error to console
             document.getElementById(containerId).innerHTML = '<p class="error-message">Error fetching match data. Please try again later.</p>';
         }
     }
