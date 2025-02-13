@@ -4,93 +4,171 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Live Cricket Scores</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
     <style>
+        /* Reset default styling */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f9;
+            font-family: 'Roboto', sans-serif;
+            background-color: #f3f4f8;
+            color: #333;
             display: flex;
             justify-content: center;
             align-items: center;
             height: 100vh;
-            margin: 0;
-        }
-        .container {
-            text-align: center;
             padding: 20px;
+        }
+
+        .container {
             background-color: #fff;
-            border-radius: 8px;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-            width: 80%;
-            max-width: 600px;
+            padding: 30px 40px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+            width: 100%;
+            max-width: 900px;
+            text-align: center;
         }
+
         h1 {
-            color: #3d3d3d;
+            font-size: 36px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-weight: 500;
         }
+
+        .loading {
+            font-size: 18px;
+            color: #888;
+            font-style: italic;
+        }
+
         #scoreboard {
             margin-top: 20px;
-            font-size: 18px;
-            color: #333;
+            display: grid;
+            gap: 15px;
+            grid-template-columns: 1fr 1fr;
+            grid-template-rows: auto;
         }
-        .match {
-            margin: 10px 0;
-            padding: 10px;
-            background-color: #e8e8e8;
-            border-radius: 5px;
-        }
-        .match p {
-            margin: 5px 0;
-        }
-        .loading {
-            font-size: 20px;
-            color: #666;
-        }
-    </style>
-</head>
-<body>
-    <div class="container">
-        <h1>Live Cricket Scores</h1>
-        <div id="scoreboard">
-            <div class="loading">Loading live scores...</div>
-        </div>
-    </div>
 
-    <script>
-        // Replace with your own CricAPI key
-        const apiKey = 'bc32eef6-fdf2-481d-a1c2-403512e18aad';
-        const url = `https://cricapi.com/api/matches?apikey=${apiKey}`;
-
-        // Function to fetch live match data
-        async function fetchLiveScores() {
-            try {
-                const response = await fetch(url);
-                const data = await response.json();
-
-                // Check if matches are available
-                if (data.matches && data.matches.length > 0) {
-                    const matchData = data.matches.map(match => {
-                        return `
-                            <div class="match">
-                                <p><strong>${match.team1}</strong> vs <strong>${match.team2}</strong></p>
-                                <p>Status: ${match.status}</p>
-                                <p>Score: ${match.score}</p>
-                            </div>
-                        `;
-                    }).join('');
-                    
-                    document.getElementById('scoreboard').innerHTML = matchData;
-                } else {
-                    document.getElementById('scoreboard').innerHTML = '<p>No live matches currently.</p>';
-                }
-            } catch (error) {
-                document.getElementById('scoreboard').innerHTML = '<p>Error fetching live scores. Please try again later.</p>';
+        @media (max-width: 768px) {
+            #scoreboard {
+                grid-template-columns: 1fr;
             }
         }
 
-        // Fetch the live scores when the page loads
-        fetchLiveScores();
+        .match {
+            background-color: #ffffff;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+            transition: transform 0.3s ease;
+        }
 
-        // Refresh scores every 30 seconds
-        setInterval(fetchLiveScores, 30000);
-    </script>
+        .match:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .match-header {
+            font-size: 18px;
+            font-weight: 500;
+            color: #34495e;
+            margin-bottom: 8px;
+        }
+
+        .match-status {
+            font-size: 16px;
+            color: #7f8c8d;
+            margin-bottom: 8px;
+        }
+
+        .match-score {
+            font-size: 18px;
+            font-weight: 600;
+            color: #27ae60;
+        }
+
+        .match-completed .match-score {
+            color: #e74c3c;
+        }
+
+        .match-in-progress .match-score {
+            color: #f39c12;
+        }
+
+        .match-pending .match-score {
+            color: #3498db;
+        }
+
+        .error-message {
+            color: #e74c3c;
+            font-size: 18px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>Live Cricket Scores</h1>
+    <div id="scoreboard">
+        <div class="loading">Fetching live scores...</div>
+    </div>
+</div>
+
+<script>
+    // Replace with your own CricAPI key
+    const apiKey = 'bc32eef6-fdf2-481d-a1c2-403512e18aad';
+    const url = `https://cricapi.com/api/matches?apikey=${apiKey}`;
+
+    // Function to fetch live match data
+    async function fetchLiveScores() {
+        try {
+            const response = await fetch(url);
+            const data = await response.json();
+
+            // Check if matches are available
+            if (data.matches && data.matches.length > 0) {
+                const matchData = data.matches.map(match => {
+                    let matchStatusClass = 'match-pending'; // Default status
+
+                    if (match.status === 'Match completed') {
+                        matchStatusClass = 'match-completed';
+                    } else if (match.status === 'In progress') {
+                        matchStatusClass = 'match-in-progress';
+                    }
+
+                    return `
+                        <div class="match ${matchStatusClass}">
+                            <div class="match-header">
+                                <strong>${match.team1}</strong> vs <strong>${match.team2}</strong>
+                            </div>
+                            <div class="match-status">${match.status}</div>
+                            <div class="match-score">${match.score || 'No score available'}</div>
+                        </div>
+                    `;
+                }).join('');
+                
+                document.getElementById('scoreboard').innerHTML = matchData;
+            } else {
+                document.getElementById('scoreboard').innerHTML = '<p class="error-message">No live matches currently.</p>';
+            }
+        } catch (error) {
+            document.getElementById('scoreboard').innerHTML = '<p class="error-message">Error fetching live scores. Please try again later.</p>';
+        }
+    }
+
+    // Fetch the live scores when the page loads
+    fetchLiveScores();
+
+    // Refresh scores every 30 seconds
+    setInterval(fetchLiveScores, 30000);
+</script>
+
 </body>
 </html>
