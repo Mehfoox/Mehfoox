@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Cricket Scores</title>
+    <title>Live & Past Cricket Scores</title>
     <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500&family=Source+Code+Pro:wght@400;600&display=swap" rel="stylesheet">
     <style>
         /* Reset default styling */
@@ -110,24 +110,41 @@
             font-size: 18px;
         }
 
+        .section-title {
+            font-size: 24px;
+            color: #2c3e50;
+            margin-top: 40px;
+            margin-bottom: 10px;
+        }
+
     </style>
 </head>
 <body>
 
 <div class="container">
-    <h1>Live Cricket Scores</h1>
-    <div id="scoreboard">
+    <h1>Live & Past Cricket Scores</h1>
+
+    <!-- Section for live scores -->
+    <div class="section-title">Live Matches</div>
+    <div id="live-scores">
         <div class="loading">Fetching live scores...</div>
+    </div>
+
+    <!-- Section for past matches -->
+    <div class="section-title">Past Matches</div>
+    <div id="past-scores">
+        <div class="loading">Fetching past match results...</div>
     </div>
 </div>
 
 <script>
     // Replace with your own CricAPI key
     const apiKey = 'bc32eef6-fdf2-481d-a1c2-403512e18aad';
-    const url = `https://cricapi.com/api/matches?apikey=${apiKey}`;
+    const liveMatchesUrl = `https://cricapi.com/api/matches?apikey=${apiKey}&status=LIVE`; // Fetch live matches
+    const pastMatchesUrl = `https://cricapi.com/api/matches?apikey=${apiKey}&status=COMPLETED`; // Fetch completed matches
 
-    // Function to fetch live match data
-    async function fetchLiveScores() {
+    // Function to fetch match data
+    async function fetchMatchData(url, containerId) {
         try {
             const response = await fetch(url);
             const data = await response.json();
@@ -154,20 +171,24 @@
                     `;
                 }).join('');
                 
-                document.getElementById('scoreboard').innerHTML = matchData;
+                document.getElementById(containerId).innerHTML = matchData;
             } else {
-                document.getElementById('scoreboard').innerHTML = '<p class="error-message">No live matches currently.</p>';
+                document.getElementById(containerId).innerHTML = '<p class="error-message">No matches found.</p>';
             }
         } catch (error) {
-            document.getElementById('scoreboard').innerHTML = '<p class="error-message">Error fetching live scores. Please try again later.</p>';
+            document.getElementById(containerId).innerHTML = '<p class="error-message">Error fetching match data. Please try again later.</p>';
         }
     }
 
-    // Fetch the live scores when the page loads
-    fetchLiveScores();
+    // Fetch live and past match data
+    fetchMatchData(liveMatchesUrl, 'live-scores');
+    fetchMatchData(pastMatchesUrl, 'past-scores');
 
     // Refresh scores every 30 seconds
-    setInterval(fetchLiveScores, 30000);
+    setInterval(() => {
+        fetchMatchData(liveMatchesUrl, 'live-scores');
+        fetchMatchData(pastMatchesUrl, 'past-scores');
+    }, 30000);
 </script>
 
 </body>
