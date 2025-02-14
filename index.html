@@ -3,18 +3,46 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Live Cricket Scores</title>
+    <title>Personal Website</title>
     <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Live Cricket Scores</h1>
-        <div id="live-scores" class="score-list">
-            <!-- Live cricket scores will appear here -->
+    <header>
+        <div class="container">
+            <h1>My Personal Website</h1>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="portfolio.html">Portfolio</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                </ul>
+            </nav>
         </div>
-        <button id="refresh-btn">Refresh Scores</button>
-    </div>
-
-    <script src="app.js"></script>
+    </header>
+    
+    <main class="container">
+        <section id="about">
+            <h2>About Me</h2>
+            <img src="profile.jpg" alt="Profile Picture" class="profile-pic">
+            <p>Hello! I am a passionate individual who loves creating and designing. Explore my website to learn more about me.</p>
+        </section>
+        <section id="portfolio">
+            <h2>Portfolio</h2>
+            <p>Check out some of my works below.</p>
+            <div class="gallery">
+                <img src="project1.jpg" alt="Project 1" class="portfolio-img">
+                <img src="project2.jpg" alt="Project 2" class="portfolio-img">
+            </div>
+        </section>
+    </main>
+    
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 My Personal Website. All Rights Reserved.</p>
+            <p>Follow me on <a href="#">Twitter</a> | <a href="#">LinkedIn</a></p>
+        </div>
+    </footer>
 </body>
 </html>
